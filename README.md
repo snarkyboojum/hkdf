@@ -5,3 +5,5 @@ This library implements an HMAC based key derivation function (HKDF) written in 
 ### Resources
 
 - [HMAC-based Extract-and-Expand Key Derivation Function (HKDF)](https://tools.ietf.org/html/rfc5869)
+- [HMAC: Keyed-Hashing for Message Authentication](https://www.ietf.org/rfc/rfc2104.txt)
+- [Cryptographic Extraction and Key Derivation: The HKDF Scheme](https://eprint.iacr.org/2010/264.pdf) aka "HKDF-paper"
