@@ -15,7 +15,7 @@ fn flatten_u64(input: &[u64], output: &mut Vec<u8>) {
 // outputs pseudorandom key - prk
 fn hkdf_extract(salt: Option<&[u8]>, ikm: &[u8], prk: &mut Vec<u8>) {
     // we are going to get a 512 bit hmac (8 x u64)
-    let mut hmac;
+    let hmac;
 
     match salt {
         None => {
@@ -34,7 +34,7 @@ fn hkdf_extract(salt: Option<&[u8]>, ikm: &[u8], prk: &mut Vec<u8>) {
 
 // len is <= 255 * HashLen; prk is usually the input from hkdf_extract()
 // outputs key material - okm on length len (in bytes)
-fn hkdf_expand(prk: &[u8], info: Option<&[u8]>, len: usize, okm: &mut [u8]) {
+fn hkdf_expand(prk: &[u8], info: Option<&[u8]>, len: usize, okm: &mut Vec<u8>) {
     assert!(len <= 255 * HASHLEN);
     let n = (len + HASHLEN - 1) / HASHLEN;
 
@@ -45,11 +45,6 @@ fn hkdf_expand(prk: &[u8], info: Option<&[u8]>, len: usize, okm: &mut [u8]) {
     for i in 1..=n {
         let mut text = vec![];
 
-        /*
-        if okm_source.len() != 0 {
-            text.extend_from_slice(&okm_source[i - 1]);
-        }
-        */
         // info is optional, and it could also be empty
         if let Some(context) = info {
             text.extend_from_slice(context);
@@ -63,7 +58,11 @@ fn hkdf_expand(prk: &[u8], info: Option<&[u8]>, len: usize, okm: &mut [u8]) {
 
     // TODO: do proper error checking here
     assert!(okm_source.len() * 8 >= len);
-    // okm = okm_source[0..len];
+
+    // flatten to bytes and only put len bytes into okm
+    let mut okm_output = Vec::<u8>::new();
+    flatten_u64(&okm_source, &mut okm_output);
+    okm.extend(okm_output[0..len].iter());
 }
 
 fn main() {
