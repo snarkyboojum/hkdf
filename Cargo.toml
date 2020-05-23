@@ -8,3 +8,6 @@ edition = "2018"
 
 [dependencies]
 hmac_sha = { git = "https://github.com/snarkyboojum/hmac_sha.git"}
+
+[dev-dependencies]
+hex = "0.4.2"

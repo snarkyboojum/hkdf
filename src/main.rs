@@ -76,4 +76,28 @@ mod tests {
 
     #[test]
     fn test_hkdf_extract() {}
+
+    #[test]
+    fn test_hkdf_expand() {
+        use hex::FromHex;
+
+        let ikm = Vec::from_hex("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b")
+            .expect("Couldn't parse ikm");
+        let salt = Vec::from_hex("000102030405060708090a0b0c").expect("Couldn't parse salt");
+        let info = Vec::from_hex("f0f1f2f3f4f5f6f7f8f9").expect("Couldn't parse info");
+        let len = 42 as usize;
+        let prk = Vec::from_hex("665799823737ded04a88e47e54a5890bb2c3d247c7a4254a8e61350723590a26c36238127d8661b88cf80ef802d57e2f7cebcf1e00e083848be19929c61b4237").expect("Couldn't parse prk");
+        let okm = Vec::from_hex(
+            "832390086cda71fb47625bb5ceb168e4c8e26a1a16ed34d9fc7fe92c1481579338da362cb8d9f925d7cb",
+        )
+        .expect("Couldn't parse okm");
+
+        let mut test_prk = Vec::<u8>::new();
+        let mut test_okm = Vec::<u8>::new();
+        hkdf_extract(Some(&salt), &ikm, &mut test_prk);
+        hkdf_expand(&test_prk, Some(&info), len, &mut test_okm);
+
+        assert_eq!(test_prk, prk);
+        assert_eq!(test_okm, okm);
+    }
 }
