@@ -74,6 +74,10 @@ mod tests {
 
     use super::*;
 
+    // see https://www.kullo.net/blog/hkdf-sha-512-test-vectors/
+
+    // TODO: flesh out tests to check for all edge cases
+
     #[test]
     fn test_hkdf_extract() {
         use hex::FromHex;
