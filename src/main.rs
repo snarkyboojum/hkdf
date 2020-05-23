@@ -3,11 +3,19 @@ use hmac_sha::hmac_sha512;
 // TODO: import this from HMAC library instead?
 const HASHLEN: usize = 512;
 
+fn flatten_u64(input: &[u64], output: &mut Vec<u8>) {
+    for &block in input {
+        output.extend_from_slice(&block.to_be_bytes());
+    }
+    // we should have 8n bytes
+    assert_eq!(output.len() % 8, 0);
+}
+
 // salt is optional (by spec), but really should always be used
 // outputs pseudorandom key - prk
-fn hkdf_extract(salt: Option<&[u8]>, ikm: &[u8], prk: &mut [u8]) {
-    // we are going to get a 512 bit hmac
-    let mut hmac = [0u64; 8];
+fn hkdf_extract(salt: Option<&[u8]>, ikm: &[u8], prk: &mut Vec<u8>) {
+    // we are going to get a 512 bit hmac (8 x u64)
+    let mut hmac;
 
     match salt {
         None => {
@@ -20,9 +28,8 @@ fn hkdf_extract(salt: Option<&[u8]>, ikm: &[u8], prk: &mut [u8]) {
         }
     }
 
-    // TODO: convert hmac to prk (array of bytes)
-    // ...
-    // prk = hmac
+    // put all bytes from hmac into prk
+    flatten_u64(&hmac, prk);
 }
 
 // len is <= 255 * HashLen; prk is usually the input from hkdf_extract()
